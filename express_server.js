@@ -10,7 +10,15 @@ const urlDatabase = {
 app.get('/', (require, response) => {
   response.send('H 3 l l @ ');
 });
+app.get('/urls.json', (require, response) => {
+  response.json(urlDatabase)
+});
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
 
 app.listen(port, () => {
   console.log(`listning on port ${port}`)
-})
+});
+
+
