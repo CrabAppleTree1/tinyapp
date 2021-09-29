@@ -18,6 +18,10 @@ app.get('/urls.json', (require, response) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
 
 app.listen(port, () => {
   console.log(`listning on port ${port}`)
