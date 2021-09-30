@@ -5,6 +5,7 @@ const app = express();
 const port = 8080;
 
 app.set("view engine", "ejs")
+app.use(bodyParser.urlencoded({extended: true}));
 
 function generateRandomString() {
 
@@ -16,13 +17,26 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-app.use(bodyParser.urlencoded({extended: true}));
 
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+
+
+app.post("/urls", (req, res) => {  //when post to /urls
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);  //redirects to /urls/:shortURL
 });
-
+app.post("/urls/:shortURL", (req, res) => {
+  let shortURL = req.params.shortURL;
+  let newUrl = req.body.newUrl;
+  urlDatabase[shortURL] = newUrl;
+  res.redirect("/urls");
+});
+//***********************************************************Pose/GET line */
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
 app.get('/', (require, response) => {
   response.send('H 3 l l @ ');
 });
