@@ -10,5 +10,16 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+    <% if (user) { %>
+      
+      <form class="form-inline justify-content-end" method="POST" action="/logout">
+        <!-- <div class="text-white mr-2">Hello <%= user.email %>!</div> -->
+        <button type="submit" class="btn btn-info">Logout</button>
+      </form>
+      <%} else { %>
+      
+      <a href="/login" class="btn btn-success">Login</a>
+      <!-- <a href="/register" class="btn btn-warning">Register</a> -->
+      <% } %>
   </nav>
 </header>
