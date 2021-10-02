@@ -57,9 +57,10 @@ app.post("/logout", (req, res) => {
   res.redirect(`/urls`); 
 })
 //***********************************************************Post/GET line */
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+app.get("/register", (req, res) => {
+  // const templateVars = { user: null };
+  const email = req.session['email'];
+  res.render("urls_register");
 });
 app.get('/', (require, response) => {
   response.send('H 3 l l @ ');
@@ -76,6 +77,10 @@ app.get("/urls", (req, res) => {
 });
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL/* What goes here? */ };
