@@ -30,6 +30,7 @@ const users = {
     password: "dish"
   }
 }
+//***HELPER FUNCTIONS********************************************************line */
 // Add User
 const addUser = function(email, password, users) {
   const userId = generateRandomString();
@@ -50,7 +51,7 @@ app.use(cookieSession({
    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   
 }));
-
+//***HELPER FUNCTIONS***************************************************************line */
 
 
 app.post("/urls", (req, res) => {  //when post to /urls
@@ -89,26 +90,31 @@ app.post("/logout", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
+  
   const email = req.body.email;
   const password = req.body.password;
+ 
   const userFound = findUsersByEmail(email, users);
 
   if (userFound) {
-    res.status(400).send("user already exists");
+    res.status(400).send("User already exists");
     return;
+  }
+  if (!email || !password) {
+    return res.status(400).send('Invalid Input');
   }
   
   // Create new user and assign it with a new cookie session
   const userId = addUser(email, password, users);
-  req.session['user_id'] = userId;
+  res.cookie('user_id', userID);
 
   res.redirect('/urls');
 });
 //***********************************************************Post/GET line */
 app.get("/register", (req, res) => {
   // const templateVars = { user: null };
-  const email = req.session['email'];
-  res.render("urls_register");
+  // const user_id = req.session['user_id'];
+  res.render("register");
 });
 app.get('/', (require, response) => {
   response.send('H 3 l l @ ');
@@ -131,7 +137,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL/* What goes here? */ };
+  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL};
   res.render("urls_show", templateVars);
 });
 
