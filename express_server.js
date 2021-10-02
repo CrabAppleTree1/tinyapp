@@ -1,8 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-// app.use(cookieParser());
-
+const cookieSession = require("cookie-parser");
 const app = express();
 const port = 8080;
 
@@ -19,6 +17,39 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "r@e.com", 
+    password: "purp"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "2@ex.com", 
+    password: "dish"
+  }
+}
+// Add User
+const addUser = function(email, password, users) {
+  const userId = generateRandomString();
+
+  users[userId] = {
+    id: userId,
+    email: email,
+    password: bcrypt.hashSync(password, salt)
+  };
+
+  return userId;
+};
+app.use(cookieSession({
+  name: 'session',
+  //[/* secret keys */],
+  keys: ['the secretests keys are amissspelling', 'you wont get this key in a few thousand sweyears'], 
+   // Cookie Options
+   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  
+}));
 
 
 
@@ -56,6 +87,23 @@ app.post("/logout", (req, res) => {
   res.clearCookie('username');
   res.redirect(`/urls`); 
 })
+
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userFound = findUsersByEmail(email, users);
+
+  if (userFound) {
+    res.status(400).send("user already exists");
+    return;
+  }
+  
+  // Create new user and assign it with a new cookie session
+  const userId = addUser(email, password, users);
+  req.session['user_id'] = userId;
+
+  res.redirect('/urls');
+});
 //***********************************************************Post/GET line */
 app.get("/register", (req, res) => {
   // const templateVars = { user: null };
