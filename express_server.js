@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieSession = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const app = express();
 const port = 8080;
 const bcrypt = require('bcryptjs');
@@ -10,7 +10,7 @@ const {
   authenticateUser,
   addUser,
   generateRandomString,
-  urlsForUser
+  userURLs
 } = require('./helpers');
 
 app.set("view engine", "ejs");
@@ -18,7 +18,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cookieSession({
-    path    : '/',
+    
     name: "session",
     //seed
     keys: ["dawg you never going to break this seed", "unless you know how i talk when i type"],
@@ -52,7 +52,7 @@ const users = {
 
 
 app.post("/urls", (req, res) => {
-  const userID = req.session.user_id;
+  const userID = req.session[user_id];
  
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
@@ -124,12 +124,6 @@ app.post("/register", (req, res) => {
   req.session.user_id = user._userID;
   res.redirect("/urls");
 });
-app.post("/urls/:id", (req, res) => {
-  var newLongURL = req.body.longURL;
-  urlDatabase[req.params.id].longURL = newLongURL;
-  console.log("this is from the post urls :id section: " + urlDatabase[newLongURL]);
-  res.redirect("/urls");
-});
 //***********************************************************Post/GET line */
 
 //*****initial tests ******************************************************/
@@ -151,24 +145,16 @@ app.get("/users.json", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-// app.get("/urls", (req, res) => {
-//   const userID = req.session.user_id;
-//   const loggedIn = users[userID];
-//   if (!loggedIn) {
-//     res.status(401).send("Permission Denied, Please login");
-//   }
-//   const filteredURLs = urlsForUser(userID, urlDatabase);
-//   const templateVars = {
-//     urls: filteredURLs,
-//     user: loggedIn
-//   };
-//   res.render("urls_index", templateVars);
-// });
 app.get("/urls", (req, res) => {
-
-  let templateVars = {
-    urlDatabase: urlsForUser(req.session["user_id"]),
-    user: req.session["user_id"]
+  const userID = req.session['user_id'];
+  const loggedIn = users[userID];
+  if (!loggedIn) {
+    res.status(401).send("Permission Denied, Please login");
+  }
+  const filteredURLs = urlsForUser(userID, urlDatabase);
+  const templateVars = {
+    urls: filteredURLs,
+    user: loggedIn
   };
   res.render("urls_index", templateVars);
 });
@@ -199,29 +185,16 @@ app.get("/register", (req, res) => {
 
 //take user to urls_new
 app.get("/urls/new", (req, res) => {
-  const userID = req.session.user_id;
-  const loggedIn = users[userID];
-  
   const templateVars = {
-    user: loggedIn
+    email: req.session.email,
+    user: users[req.session.user_id]
   };
-  if (!loggedIn) {
+  if (!req.session.user_id) {
     res.redirect("/login");
+    return;
   }
   res.render("urls_new", templateVars);
 });
-app.get("/urls/:id", (req, res) => {
-  if (req.session["user_ID"] === urlDatabase[req.params.id].userID) {
-    let templateVars = {
-      user: users[req.session["user_ID"]],
-      shortURL: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL
-    };
-    res.render("urls_show", templateVars);
-  } else {
-    res.status(550).send("You can't do that");
-  }
- });
 
 //renders valid long url for short url
 app.get("/u/:shortURL", (req, res) => {
