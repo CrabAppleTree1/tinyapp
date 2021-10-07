@@ -11,6 +11,18 @@ const urlDatabase = {
     userID: "the32w"
   }
 };
+const users = {
+  "user": {
+    id: "001",
+    email: "r@e.com",
+    password: "pu"
+  },
+  "user2": {
+    id: "002",
+    email: "2@ex.com",
+    password: "di"
+  }
+};
 
 // generate random 7 letter string
 const generateRandomString = () => {
@@ -24,12 +36,14 @@ const addUser = function(email, password, users) {
   return userId;
 };
 //confirm email in user db
-const findByEmail = (email, users) => {
-  for (const id in users) {
-    if (email === users[id].email) {
-      return users[id];
+const findByEmail = function(email, users) {
+  for (let userId in users) {
+    const user = users[userId];
+    if (email === user.email) {
+      return user;
     }
   }
+  return false;
 };
 //confirm passwordhas for email
 const authenticateUser = function(email, password, users) {
