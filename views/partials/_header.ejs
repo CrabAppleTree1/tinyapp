@@ -1,6 +1,6 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
-    <a class="navbar-brand" href="/urls">TinyApp</a>
+    <a class="navbar-brand" href="/urls">TinyLodgingApp</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -10,16 +10,17 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if (user) { %>
-      
-      <form class="form-inline justify-content-end" method="POST" action="/logout">
-        <!-- <div class="text-white mr-2">Hello <%= user.email %>!</div> -->
-        <button type="submit" class="btn btn-info">Logout</button>
-      </form>
-      <%} else { %>
-      
-      <a href="/login" class="btn btn-success">Login</a>
-      <!-- <a href="/register" class="btn btn-warning">Register</a> -->
+    <div>
+      <% if ( user ) { %>
+        <form action="/logout" method="POST" class="form-inline">
+          <class='nav-item'> 
+          <span> User Email <%= user.email %> </span>
+          <button type="submit" class="btn btn-primary">Lodge-out</button>
+        </form>
+        <% }  else { %> 
+          <a href="/login"><button type="submit" class="btn btn-primary">Lodge-in</button></a>
+          <a href="/register"><button type="submit" class="btn btn-primary" href="/register">Create new TinyURL Lodger</button></a>
       <% } %>
+    </div>
   </nav>
 </header>
