@@ -1,68 +1,78 @@
 const bcrypt = require('bcryptjs');
-const salt = bcrypt.genSaltSync(10);
-//URL db
+// const salt = bcrypt.genSaltSync(10);
+
+const userDb = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "the32w"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
   },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "the32w"
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
   }
 };
-const users = {
-  "user": {
-    id: "001",
-    email: "r@e.com",
-    password: "pu"
-  },
-  "user2": {
-    id: "002",
-    email: "2@ex.com",
-    password: "di"
-  }
-};
+
 
 // generate random 7 letter string
 const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 9);
 };
 // Add User to db
-const addUser = function(email, password, users) {
-  const hashedPassword = bcrypt.hashSync(password, salt);
-  const userId = generateRandomString();
-  users[userId] = { userId, email, password: hashedPassword };
-  return userId;
+const addNewUser = function(email, password, users) {
+  const hashPassword = bcrypt.hashSync(password, 10);
+  let userID = generateRandomString();
+  users[userID] = {
+    id: userID,
+    email,
+    password: hashPassword
+  };
+  return userID;
 };
 //confirm email in user db
-const findByEmail = function(email, users) {
-  for (let userId in users) {
-    const user = users[userId];
+const getUserByEmail = function(email, users) {
+  for (const userID in users) {
+    const user = users[userID];
     if (email === user.email) {
       return user;
     }
   }
-  return false;
+  return undefined;
 };
-//confirm passwordhas for email
+
+//confirm password has for email
 const authenticateUser = function(email, password, users) {
-  const userFound = findByEmail(email, users);
+  const userFound = getUserByEmail(email, users);
   if (userFound && bcrypt.compareSync(password, userFound.password)) {
     return userFound;
   }
-  return false;
+  return undefined;
 };
  
 //object of user urls
-const urlsForUser = function(id)  {
-  let usersItems = {};
-  for (let elem in urlDatabase) {
-    if (urlDatabase[elem].userID === id) {
-      usersItems[elem] = urlDatabase[elem];
+const urlsForUser = function(id) {
+  const result = {};
+  const keys = Object.keys(urlDatabase);
+
+  for (const shortURL of keys) {
+    const url = urlDatabase[shortURL];
+    if (url.userID === id) {
+      result[shortURL] = url;
     }
   }
-  return usersItems;
+  return result;
 };
 
-module.exports = {generateRandomString, addUser, findByEmail, authenticateUser, urlsForUser};
+module.exports = { userDb, urlDatabase, authenticateUser,  getUserByEmail, generateRandomString, addNewUser, urlsForUser };
